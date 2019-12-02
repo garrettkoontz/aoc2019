@@ -1,10 +1,16 @@
-package com.k00ntz.aoc.utils
+package com.k00ntz.aoc2019.utils
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.math.sqrt
 import kotlin.streams.toList
+import kotlin.system.measureTimeMillis
+
+fun measureAndPrintTime(block: () -> Unit){
+    val time = measureTimeMillis (block)
+    println(" took $time ms")
+}
 
 inline fun <T : Any> parseFile(fileName: String, crossinline parsefn: (String) -> T): List<T> =
     ClassLoader.getSystemResourceAsStream(fileName).use {
@@ -55,7 +61,6 @@ fun convexHull(pts: List<Point>): List<Point> {
     stack.push(points[0])
     stack.push(points[1])
     for (i in (2 until n)) {
-        val vl = ccw(stack.elementAt(stack.size - 2), stack.peek(), points[i])
         while (stack.size >= 2 &&
             ccw(stack.elementAt(stack.size - 2), stack.peek(), points[i]) <= 0
         ) {

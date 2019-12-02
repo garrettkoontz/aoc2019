@@ -1,5 +1,7 @@
 package com.k00ntz.aoc.utils
 
+import com.k00ntz.aoc2019.utils.*
+
 
 data class Particle(
     val position: Point = Pair(0, 0),
