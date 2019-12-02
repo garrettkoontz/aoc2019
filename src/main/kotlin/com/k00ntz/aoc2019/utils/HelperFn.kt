@@ -13,13 +13,15 @@ fun measureAndPrintTime(block: () -> Unit){
 }
 
 inline fun <T : Any> parseFile(fileName: String, crossinline parsefn: (String) -> T): List<T> =
-    ClassLoader.getSystemResourceAsStream(fileName).use {
-        it.bufferedReader().lines().map { parsefn(it) }.toList()
+    ClassLoader.getSystemResourceAsStream(fileName).use { inputStream ->
+        if(inputStream == null) throw RuntimeException("resource $fileName not found")
+        inputStream.bufferedReader().lines().map { parsefn(it) }.toList()
     }
 
 inline fun <T : Any> parseLine(fileName: String, crossinline parsefn: (String) -> T): T =
-    ClassLoader.getSystemResourceAsStream(fileName).use {
-        it.bufferedReader().lines().map { parsefn(it) }.findFirst()
+    ClassLoader.getSystemResourceAsStream(fileName).use { inputStream ->
+        if(inputStream == null) throw RuntimeException("resource $fileName not found")
+        inputStream.bufferedReader().lines().map { parsefn(it) }.findFirst()
     }.get()
 
 //fun <T> cartesian(c1: Collection<T>, c2: Collection<T> = c1): List<Pair<T, T>> =
