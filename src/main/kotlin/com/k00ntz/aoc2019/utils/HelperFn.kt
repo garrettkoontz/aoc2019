@@ -3,24 +3,25 @@ package com.k00ntz.aoc2019.utils
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.sqrt
 import kotlin.streams.toList
 import kotlin.system.measureTimeMillis
 
-fun measureAndPrintTime(block: () -> Unit){
-    val time = measureTimeMillis (block)
+fun measureAndPrintTime(block: () -> Unit) {
+    val time = measureTimeMillis(block)
     println(" took $time ms")
 }
 
 inline fun <T : Any> parseFile(fileName: String, crossinline parsefn: (String) -> T): List<T> =
     ClassLoader.getSystemResourceAsStream(fileName).use { inputStream ->
-        if(inputStream == null) throw RuntimeException("resource $fileName not found")
+        if (inputStream == null) throw RuntimeException("resource $fileName not found")
         inputStream.bufferedReader().lines().map { parsefn(it) }.toList()
     }
 
 inline fun <T : Any> parseLine(fileName: String, crossinline parsefn: (String) -> T): T =
     ClassLoader.getSystemResourceAsStream(fileName).use { inputStream ->
-        if(inputStream == null) throw RuntimeException("resource $fileName not found")
+        if (inputStream == null) throw RuntimeException("resource $fileName not found")
         inputStream.bufferedReader().lines().map { parsefn(it) }.findFirst()
     }.get()
 
@@ -34,6 +35,16 @@ typealias Point = Pair<Int, Int>
 
 operator fun Point.plus(other: Point): Point =
     Pair(this.first + other.first, this.second + other.second)
+
+operator fun Point.times(other: Point): Point =
+    Pair(this.first * other.first, this.second * other.second)
+
+operator fun Point.times(i: Int): Point =
+    Pair(this.first * i, this.second * i)
+
+fun Point.manhattanDistanceto(point: Point): Int {
+    return abs(this.x() - point.x()) + abs(this.y() - point.y())
+}
 
 fun Point.distanceTo(point: Point): Double {
     val xDiff = (this.x() - point.x()).toDouble()
@@ -92,11 +103,11 @@ private fun <T> Array<T>.pmap(f: suspend (T) -> Unit) = runBlocking {
     map { async { f(it) } }.map { it.await() }
 }
 
-fun <A,B> Iterable<A>.pMapIndexed(f: suspend (Int, A) -> B): List<B> = runBlocking {
-    mapIndexed { index, i -> async { f(index, i) }}.map {it.await()}
+fun <A, B> Iterable<A>.pMapIndexed(f: suspend (Int, A) -> B): List<B> = runBlocking {
+    mapIndexed { index, i -> async { f(index, i) } }.map { it.await() }
 }
 
 
 fun <T, R> Array<out T>.pMapIndexed(f: (index: Int, T) -> R): List<R> = runBlocking {
-    mapIndexed { index, i -> async { f(index, i) }}.map {it.await()}
+    mapIndexed { index, i -> async { f(index, i) } }.map { it.await() }
 }
