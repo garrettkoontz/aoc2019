@@ -1,7 +1,5 @@
 package com.k00ntz.aoc2019
 
-private typealias Address = Int
-
 class IntCodeComputer(private val inputMemory: IntArray) {
 
     fun executeProgram(noun: Int? = null, verb: Int? = null): IntArray {
