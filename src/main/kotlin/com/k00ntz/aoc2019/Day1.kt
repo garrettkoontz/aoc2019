@@ -11,9 +11,9 @@ class Day1 : Day {
         measureAndPrintTime { print(ints.map { moduleFuelCalcWithFuel(it) }.sum()) }
     }
 
-    private fun moduleFuelCalc(mass: Int) = (mass / 3) - 2
+    internal fun moduleFuelCalc(mass: Int) = (mass / 3) - 2
 
-    private fun moduleFuelCalcWithFuel(mass: Int): Int {
+    internal fun moduleFuelCalcWithFuel(mass: Int): Int {
         var sum = 0
         var m = mass
         while (m > 0) {

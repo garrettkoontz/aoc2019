@@ -5,22 +5,24 @@ import org.junit.jupiter.api.Test
 
 internal class Day3KtTest {
 
+    val day3 = Day3()
+
     @Test
     fun traceWire() {
-        assertEquals(22, traceWire(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) }).size)
-        assertEquals(22, traceWire(listOf("U7", "R6", "D4", "L4").map { ManhattanDirection(it) }).size)
+        assertEquals(22, day3.traceWire(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) }).size)
+        assertEquals(22, day3.traceWire(listOf("U7", "R6", "D4", "L4").map { ManhattanDirection(it) }).size)
     }
 
     @Test
     fun findClosestIntersection() {
         assertEquals(
             6,
-            findClosestIntersection(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) },
+            day3.findClosestIntersection(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) },
                 listOf("U7", "R6", "D4", "L4").map { ManhattanDirection(it) })
         )
         assertEquals(
             159,
-            findClosestIntersection(
+            day3.findClosestIntersection(
                 listOf(
                     "R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"
                 ).map { ManhattanDirection(it) },
@@ -28,7 +30,7 @@ internal class Day3KtTest {
         )
         assertEquals(
             135,
-            findClosestIntersection(listOf(
+            day3.findClosestIntersection(listOf(
                 "R98",
                 "U47",
                 "R26",
@@ -60,12 +62,12 @@ internal class Day3KtTest {
     fun findFirstIntersection() {
         assertEquals(
             30,
-            findFirstIntersection(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) },
+            day3.findFirstIntersection(listOf("R8", "U5", "L5", "D3").map { ManhattanDirection(it) },
                 listOf("U7", "R6", "D4", "L4").map { ManhattanDirection(it) })
         )
         assertEquals(
             610,
-            findFirstIntersection(
+            day3.findFirstIntersection(
                 listOf(
                     "R75", "D30", "R83", "U83", "L12", "D49", "R71", "U7", "L72"
                 ).map { ManhattanDirection(it) },
@@ -73,7 +75,7 @@ internal class Day3KtTest {
         )
         assertEquals(
             410,
-            findFirstIntersection(listOf(
+            day3.findFirstIntersection(listOf(
                 "R98",
                 "U47",
                 "R26",

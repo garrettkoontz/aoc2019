@@ -11,7 +11,7 @@ data class ManhattanDirection(val dir: Direction, val count: Int) {
 
     fun pointsBetween(startPoint: Point): List<Point> {
         val movePoint = Point(this.dir.xMove, this.dir.yMove)
-        return (1..count).map { startPoint.plus(movePoint.times(it)) }
+        return (1..count).map { startPoint + movePoint * it }
     }
 }
 
@@ -26,14 +26,14 @@ class Day3 : Day {
         }
     }
 
-    private fun findClosestIntersection(path1: List<ManhattanDirection>, path2: List<ManhattanDirection>): Int {
+    internal fun findClosestIntersection(path1: List<ManhattanDirection>, path2: List<ManhattanDirection>): Int {
         val points1 = traceWire(path1).drop(1)
         val points2 = traceWire(path2).drop(1)
         val center = Point(0, 0)
         return points1.intersect(points2).minBy { pt -> pt.manhattanDistanceto(center) }!!.manhattanDistanceto(center)
     }
 
-    private fun findFirstIntersection(path1: List<ManhattanDirection>, path2: List<ManhattanDirection>): Int {
+    internal fun findFirstIntersection(path1: List<ManhattanDirection>, path2: List<ManhattanDirection>): Int {
         val points1 = traceWire(path1).drop(1).withIndex().groupBy({ iv -> iv.value }, { iv -> iv.index + 1 })
         val points2 = traceWire(path2).drop(1).withIndex().groupBy({ iv -> iv.value }, { iv -> iv.index + 1 })
         return points1.flatMap {
@@ -45,7 +45,7 @@ class Day3 : Day {
         }.minBy { it.first!! + it.second!! }.let { it!!.first!! + it.second!! }
     }
 
-    private fun traceWire(paths: List<ManhattanDirection>): List<Point> {
+    internal fun traceWire(paths: List<ManhattanDirection>): List<Point> {
         val startPoint = Point(0, 0)
         return paths.fold(listOf(startPoint)) { s, md ->
             s.plus(md.pointsBetween(s.last()))
