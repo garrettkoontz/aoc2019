@@ -1,5 +1,7 @@
 package com.k00ntz.aoc2019.intcodecomputer
 
+import java.util.concurrent.ArrayBlockingQueue
+
 internal fun IntArray.executeInstruction(ins: Instruction, ip: Int, input: Input?, output: Output): Int =
     ins.executeInstruction(this, ip, input, output)
 
@@ -56,8 +58,37 @@ internal fun IntArray.parseInstruction(ip: Int): Instruction =
         }
     }
 
-data class Output(val values: MutableList<Int> = mutableListOf())
-data class Input(val value: Int)
+interface Input {
+    fun getInput(): Int
+}
+
+interface Output {
+    fun sendOutput(i: Int)
+}
+
+data class IOBuffer(val initialInput: List<Int> = emptyList(),
+                    val buffer: ArrayBlockingQueue<Int> = ArrayBlockingQueue(10, false, initialInput)) : Input,
+    Output {
+    override fun getInput(): Int =
+        buffer.take()
+
+
+    override fun sendOutput(i: Int) {
+        buffer.put(i)
+    }
+}
+
+data class FixedOutput(val values: MutableList<Int> = mutableListOf()) : Output {
+    override fun sendOutput(i: Int) {
+        values.add(i)
+    }
+}
+
+data class FixedInput(val value: List<Int>, private var state: Int = 0) : Input {
+    override fun getInput(): Int {
+        return value[state++]
+    }
+}
 
 enum class Mode(private val code: Int) {
     POSITION(0),
@@ -95,7 +126,13 @@ internal class JF(private val p1: Int, private val p1Mode: Mode, private val p2:
 
 }
 
-internal class LT(private val p1: Int, private val p1Mode: Mode, private val p2: Int, private val p2Mode: Mode, private val p3: Int) :
+internal class LT(
+    private val p1: Int,
+    private val p1Mode: Mode,
+    private val p2: Int,
+    private val p2Mode: Mode,
+    private val p3: Int
+) :
     Instruction(4) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
         memory[p3] = if (p1Mode.getValue(memory, p1) < p2Mode.getValue(memory, p2)) 1 else 0
@@ -103,7 +140,13 @@ internal class LT(private val p1: Int, private val p1Mode: Mode, private val p2:
     }
 }
 
-internal class EQ(private val p1: Int, private val p1Mode: Mode, private val p2: Int, private val p2Mode: Mode, private val p3: Int) :
+internal class EQ(
+    private val p1: Int,
+    private val p1Mode: Mode,
+    private val p2: Int,
+    private val p2Mode: Mode,
+    private val p3: Int
+) :
     Instruction(4) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
         memory[p3] = if (p1Mode.getValue(memory, p1) == p2Mode.getValue(memory, p2)) 1 else 0
@@ -115,7 +158,7 @@ internal class InputIns(private val p1: Int) : Instruction(2) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
         if (input == null) throw RuntimeException("Null input!")
         else {
-            memory[p1] = input.value
+            memory[p1] = input.getInput()
         }
         return ip + instructionSize
     }
@@ -125,13 +168,19 @@ internal class InputIns(private val p1: Int) : Instruction(2) {
 internal class OutputIns(private val p1: Int, private val mode: Mode) :
     Instruction(2) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
-        output.values.add(mode.getValue(memory, p1))
+        output.sendOutput(mode.getValue(memory, p1))
         return ip + instructionSize
     }
 
 }
 
-internal class Add(private val p1: Int, private val p1Mode: Mode, private val p2: Int, private val p2Mode: Mode, private val out: Int) :
+internal class Add(
+    private val p1: Int,
+    private val p1Mode: Mode,
+    private val p2: Int,
+    private val p2Mode: Mode,
+    private val out: Int
+) :
     Instruction(4) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
         memory[out] = p2Mode.getValue(memory, p2) + p1Mode.getValue(memory, p1)
@@ -139,7 +188,13 @@ internal class Add(private val p1: Int, private val p1Mode: Mode, private val p2
     }
 }
 
-internal class Mul(private val p1: Int, private val p1Mode: Mode, private val p2: Int, private val p2Mode: Mode, private val out: Int) :
+internal class Mul(
+    private val p1: Int,
+    private val p1Mode: Mode,
+    private val p2: Int,
+    private val p2Mode: Mode,
+    private val out: Int
+) :
     Instruction(4) {
     override fun executeInstruction(memory: IntArray, ip: Int, input: Input?, output: Output): Int {
         memory[out] = p2Mode.getValue(memory, p2) * p1Mode.getValue(memory, p1)

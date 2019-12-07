@@ -23,7 +23,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 7)
+        ).executeProgram( 7)
         assertEquals(0, output1.first())
         val (_, output2) = IntCodeComputer(
             intArrayOf(
@@ -39,7 +39,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 8)
+        ).executeProgram( 8)
         assertEquals(1, output2.first())
         val (_, output3) = IntCodeComputer(
             intArrayOf(
@@ -55,7 +55,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 9)
+        ).executeProgram( 9)
         assertEquals(0, output3.first())
     }
 
@@ -75,7 +75,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 7)
+        ).executeProgram( 7)
         assertEquals(1, output1.first())
         val (_, output2) = IntCodeComputer(
             intArrayOf(
@@ -91,7 +91,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 8)
+        ).executeProgram( 8)
         assertEquals(0, output2.first())
         val (_, output3) = IntCodeComputer(
             intArrayOf(
@@ -107,7 +107,7 @@ internal class IntCodeComputerTest {
                 -1,
                 8
             )
-        ).executeProgram(input = 9)
+        ).executeProgram( 9)
         assertEquals(0, output3.first())
     }
 
@@ -125,7 +125,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 7)
+        ).executeProgram( 7)
         assertEquals(0, output1.first())
         val (_, output2) = IntCodeComputer(
             intArrayOf(
@@ -139,7 +139,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 8)
+        ).executeProgram( 8)
         assertEquals(1, output2.first())
         val (_, output3) = IntCodeComputer(
             intArrayOf(
@@ -153,7 +153,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 9)
+        ).executeProgram( 9)
         assertEquals(0, output3.first())
     }
 
@@ -171,7 +171,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 7)
+        ).executeProgram( 7)
         assertEquals(1, output1.first())
         val (_, output2) = IntCodeComputer(
             intArrayOf(
@@ -185,7 +185,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 8)
+        ).executeProgram( 8)
         assertEquals(0, output2.first())
         val (_, output3) = IntCodeComputer(
             intArrayOf(
@@ -199,7 +199,7 @@ internal class IntCodeComputerTest {
                 3,
                 99
             )
-        ).executeProgram(input = 9)
+        ).executeProgram( 9)
         assertEquals(0, output3.first())
     }
 
@@ -224,7 +224,7 @@ internal class IntCodeComputerTest {
                 1,
                 9
             )
-        ).executeProgram(input = -1)
+        ).executeProgram( -1)
         assertEquals(1, output1.first())
         val (_, output2) = IntCodeComputer(
             intArrayOf(
@@ -245,7 +245,7 @@ internal class IntCodeComputerTest {
                 1,
                 9
             )
-        ).executeProgram(input = 0)
+        ).executeProgram( 0)
         assertEquals(0, output2.first())
         val (_, output3) = IntCodeComputer(
             intArrayOf(
@@ -266,7 +266,7 @@ internal class IntCodeComputerTest {
                 1,
                 9
             )
-        ).executeProgram(input = 1)
+        ).executeProgram( 1)
         assertEquals(1, output3.first())
     }
 
@@ -289,7 +289,7 @@ internal class IntCodeComputerTest {
                 1
             )
         ).executeProgram(
-            input = -1
+             -1
         )
         assertEquals(1, output1.first())
         val (_, output2) = IntCodeComputer(
@@ -309,7 +309,7 @@ internal class IntCodeComputerTest {
                 1
             )
         ).executeProgram(
-            input = 0
+             0
         )
         assertEquals(0, output2.first())
         val (_, output3) = IntCodeComputer(
@@ -329,7 +329,7 @@ internal class IntCodeComputerTest {
                 1
             )
         ).executeProgram(
-            input = 1
+             1
         )
         assertEquals(1, output3.first())
     }
@@ -344,15 +344,15 @@ internal class IntCodeComputerTest {
             )
         )
         val (_, output1) = gtEqLt8.executeProgram(
-            input = 7
+             7
         )
         assertEquals(999, output1.first())
         val (_, output2) = gtEqLt8.executeProgram(
-            input = 8
+             8
         )
         assertEquals(1000, output2.first())
         val (_, output3) = gtEqLt8.executeProgram(
-            input = 9
+             9
         )
         assertEquals(1001, output3.first())
     }
@@ -411,7 +411,7 @@ internal class IntCodeComputerTest {
     @Test
     fun executeInstruction() {
         val intArray = intArrayOf(1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50)
-        val output = Output()
+        val output = FixedOutput()
         assertEquals(4, intArray.executeInstruction(
             Add(
                 9,

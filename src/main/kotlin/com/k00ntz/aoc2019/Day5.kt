@@ -19,11 +19,11 @@ class Day5 : Day {
 
 
     private fun part1(ints: IntArray): List<Int> =
-        ints.let { IntCodeComputer(ints).executeProgram(null, null, 1) }.second
+        ints.let { IntCodeComputer(ints).executeProgram (1) }.second
 
 
     private fun part2(ints: IntArray): List<Int> =
-        ints.let { IntCodeComputer(ints).executeProgram(null, null, 5) }.second
+        ints.let { IntCodeComputer(ints).executeProgram(5) }.second
 }
 
 fun main() {
