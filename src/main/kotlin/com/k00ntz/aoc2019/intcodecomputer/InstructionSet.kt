@@ -1,6 +1,7 @@
 package com.k00ntz.aoc2019.intcodecomputer
 
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 internal fun IntArray.executeInstruction(ins: Instruction, ip: Int, input: Input?, output: Output): Int =
     ins.executeInstruction(this, ip, input, output)
@@ -67,7 +68,7 @@ interface Output {
 }
 
 data class IOBuffer(val initialInput: List<Int> = emptyList(),
-                    val buffer: ArrayBlockingQueue<Int> = ArrayBlockingQueue(10, false, initialInput)) : Input,
+                    val buffer: LinkedBlockingQueue<Int> = LinkedBlockingQueue(initialInput)) : Input,
     Output {
     override fun getInput(): Int =
         buffer.take()

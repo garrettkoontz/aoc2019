@@ -16,4 +16,6 @@ fun main(){
     Day5().run()
     println("Day 6")
     Day6().run()
+    println("Day 7")
+    Day7().run()
 }

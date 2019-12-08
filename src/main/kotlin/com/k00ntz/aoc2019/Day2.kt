@@ -16,9 +16,8 @@ class Day2 : Day {
         }
         measureAndPrintTime {
             print(ints.let {
-                val intCodeComputer = IntCodeComputer(ints)
-                val (i, _) = (0..99*99).map { i ->
-                        Pair(i, intCodeComputer.executeProgram(i / 100,  i % 100).first[0])
+                val (i, _) = (0..99 * 99).map { i ->
+                    Pair(i, IntCodeComputer(it, i / 100, i % 100).executeProgram().first[0])
                 }.first { it.second == 19690720 }
                 i
             })
