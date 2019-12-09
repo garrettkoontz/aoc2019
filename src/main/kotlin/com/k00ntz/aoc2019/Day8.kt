@@ -16,7 +16,7 @@ fun layerOverLayer(layers: List<Layer>): Layer {
     for (i in returnInts.indices) {
         for (j in 0 until returnInts[i].size) {
             if (returnInts[i][j] == 2) {
-                val lowerPixel: Layer? = lowers.firstOrNull() { it.ints[i][j] != 2 }
+                val lowerPixel: Layer? = lowers.firstOrNull { it.ints[i][j] != 2 }
                 if (lowerPixel != null)
                     returnInts[i][j] = lowerPixel.ints[i][j]
             }
@@ -45,9 +45,14 @@ class Day8 : Day {
     }
 
     fun checkSum(layers: List<Layer>): Int {
-        val minLayer = layers.minBy { lyr -> lyr.ints.flatten().filter { it == 0 }.size }!!
-        val flatten = minLayer.ints.flatten()
-        return flatten.filter { it == 1 }.size * flatten.filter { it == 2 }.size
+        val minLayer =
+            layers.minBy { lyr ->
+                lyr.ints.flatten().filter {
+                    it == 0
+                }.size
+            }!!
+                .ints.flatten().groupBy { it }
+        return minLayer.getValue(1).size * minLayer.getValue(2).size
     }
 
     fun parseLayers(ints: List<Int>, width: Int, height: Int): List<Layer> =
