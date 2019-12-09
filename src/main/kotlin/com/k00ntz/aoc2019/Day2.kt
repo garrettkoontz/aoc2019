@@ -7,7 +7,7 @@ import com.k00ntz.aoc2019.utils.parseFile
 
 class Day2 : Day {
     override fun run() {
-        val ints = parseFile("day2.txt") { it.split(",").map { Integer.parseInt(it) }.toIntArray() }.first()
+        val ints = parseFile("day2.txt") { it.split(",").map { it.toLong() }.toLongArray() }.first()
         measureAndPrintTime {
             print(ints.let {
                 IntCodeComputer(ints)
@@ -17,8 +17,8 @@ class Day2 : Day {
         measureAndPrintTime {
             print(ints.let {
                 val (i, _) = (0..99 * 99).map { i ->
-                    Pair(i, IntCodeComputer(it, i / 100, i % 100).executeProgram().first[0])
-                }.first { it.second == 19690720 }
+                    Pair(i, IntCodeComputer(it, i / 100L, i % 100L).executeProgram().first[0])
+                }.first { it.second == 19690720L }
                 i
             })
         }

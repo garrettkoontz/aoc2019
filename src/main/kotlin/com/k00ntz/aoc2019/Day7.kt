@@ -13,7 +13,7 @@ fun main() {
 
 class Day7 : Day {
     override fun run() {
-        val input = parseLine("day7.txt") { it.split(",").map { Integer.parseInt(it) }.toIntArray() }
+        val input = parseLine("day7.txt") { it.split(",").map { it.toLong() }.toLongArray() }
         measureAndPrintTime {
             print(maxThrustSignal(IntCodeComputer(input)))
         }
@@ -22,12 +22,12 @@ class Day7 : Day {
         }
     }
 
-    fun maxLoopedThrustSignal(input: IntArray): Int =
+    fun maxLoopedThrustSignal(input: LongArray): Long =
         loopedThrustSignal(input, allPhases(phases2).maxBy { loopedThrustSignal(input, it) }!!)
 
 
-    fun loopedThrustSignal(input: IntArray, phases: List<Int>): Int {
-        val ios = phases.mapIndexed { index, p -> if (index == 0) IOBuffer(listOf(p, 0)) else IOBuffer(listOf(p)) }
+    fun loopedThrustSignal(input: LongArray, phases: List<Long>): Long {
+        val ios = phases.mapIndexed { index, p -> if (index == 0) IOBuffer(listOf(p, 0L)) else IOBuffer(listOf(p)) }
         val wiredComputers = (ios.indices).map {
             Thread(WiredIntCodeComputer(input, ios[it], ios[(it + 1) % ios.size]))
         }
@@ -35,11 +35,11 @@ class Day7 : Day {
         return ios.first().getInput()
     }
 
-    val phases1 = (0..4).toList()
-    val phases2 = (5..9).toList()
+    val phases1 = (0L..4L).toList()
+    val phases2 = (5L..9L).toList()
 
-    fun allPhases(phases: List<Int>): Set<List<Int>> {
-        val ap = mutableSetOf<List<Int>>()
+    fun allPhases(phases: List<Long>): Set<List<Long>> {
+        val ap = mutableSetOf<List<Long>>()
         for (i in phases) {
             for (j in phases.minus(i)) {
                 for (k in phases.minus(listOf(i, j))) {
@@ -54,12 +54,12 @@ class Day7 : Day {
     }
 
 
-    fun maxThrustSignal(intCodeComputer: IntCodeComputer): Int =
+    fun maxThrustSignal(intCodeComputer: IntCodeComputer): Long =
         thrusterSignal(intCodeComputer, allPhases(phases1).maxBy { thrusterSignal(intCodeComputer, it) }!!)
 
 
-    fun thrusterSignal(intCodeComputer: IntCodeComputer, phases: List<Int>): Int {
-        var output = 0
+    fun thrusterSignal(intCodeComputer: IntCodeComputer, phases: List<Long>): Long {
+        var output = 0L
         for (p in phases) {
             output = intCodeComputer.executeProgram(p, output).second.last()
         }
