@@ -18,4 +18,10 @@ fun main(){
     Day6().run()
     println("Day 7")
     Day7().run()
+    println("Day 8")
+    Day8().run()
+    println("Day 9")
+    Day9().run()
+    println("Day 10")
+    Day10().run()
 }
