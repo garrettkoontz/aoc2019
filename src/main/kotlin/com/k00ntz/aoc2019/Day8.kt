@@ -13,8 +13,8 @@ data class Layer(val ints: List<List<Int>>) {
 fun layerOverLayer(layers: List<Layer>): Layer {
     val returnInts = layers.first().ints.map { it.toMutableList() }
     val lowers = layers.drop(1)
-    for (i in returnInts.indices) {
-        for (j in 0 until returnInts[i].size) {
+    returnInts.indices.forEach { i ->
+        (0 until returnInts[i].size).forEach { j ->
             if (returnInts[i][j] == 2) {
                 val lowerPixel: Layer? = lowers.firstOrNull { it.ints[i][j] != 2 }
                 if (lowerPixel != null)
