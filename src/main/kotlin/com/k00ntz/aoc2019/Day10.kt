@@ -7,42 +7,51 @@ fun main() {
 }
 
 class Day10 : Day {
+
+    val parseLine = { rowIdx: Int, line: String ->
+        line.mapIndexedNotNull { colIdx, char -> if (char == '#') Point(colIdx, rowIdx) else null }.toList()
+    }
+
     override fun run() {
         val input =
-            parseFile("day10.txt") { }.first()
+            parseFileIndexed("day10.txt", parseLine)
         measureAndPrintTime {
-            print(part1(input))
+            print(part1(input.flatten()).second.size)
         }
-//        measureAndPrintTime {
-//            print(part2(input))
-//        }
+        measureAndPrintTime {
+            print(part2(input.flatten())[199].let { it.x() * 100 + it.y() })
+        }
     }
 
-    fun part1(input: List<Point>): Int {
-        input.map { seenPoints(it, input.minus(it)) }.maxBy { it.second.size }!!.first
-        return 0
+    fun part1(input: List<Point>): Pair<Point, Set<Point>> {
+        return findSeeablePoints(input).maxBy { it.second.size }!!
     }
 
+    fun part2(input: List<Point>): List<Point> =
+        vaporizationOrder(input)
 
-    fun seenPoints(pt: Point, others: List<Point>): Pair<Point, Set<Point>> =
-        Pair(
-            pt,
-            others.map {
-                colinear(
-                    pt,
-                    it,
-                    others.minus(it)
-                ).plus(it)
-            }.toSet().map { lst -> lst.minBy { pt.distanceTo(it) }!! }.toSet()
-        )
+    fun vaporizationOrder(input: List<Point>): List<Point> {
+        val (laserPoint, firstHits) = findSeeablePoints(input).maxBy { it.second.size }!!
+        val result = firstHits.sortedBy { laserPoint.angleTo(it) }.toMutableList()
+        var rest = input.minus(result)
+        while (result.size < input.size) {
+            val res = seenPoints(laserPoint, rest).second.sortedBy { laserPoint.angleTo(it) }
+            result.addAll(res)
+            rest = rest.minus(res)
+        }
+        return result
+    }
+
+    fun findSeeablePoints(input: List<Point>): List<Pair<Point, Set<Point>>> =
+        input.map { seenPoints(it, input.minus(it)) }
 
 
-    fun colinear(pt1: Point, pt2: Point, others: List<Point>): List<Point> =
-        others.filter { colinear(pt1, pt2, it) }
+    fun seenPoints(pt: Point, others: List<Point>): Pair<Point, Set<Point>> {
+        val seeablePoints =
+            others.groupBy { pt.angleTo(it) }.mapValues { (_, l) -> l.minBy { pt.distanceTo(it) }!! }.values.toSet()
+        return Pair(pt, seeablePoints)
+    }
 
-
-    fun colinear(pt1: Point, pt2: Point, pt3: Point): Boolean =
-        pt1.y() - pt2.y() * (pt1.x() - pt3.x()) == (pt1.y() - pt3.y()) * (pt1.x() - pt2.x())
-
+    //2408 too high
 
 }

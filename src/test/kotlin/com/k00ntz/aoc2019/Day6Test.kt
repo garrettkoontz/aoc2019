@@ -14,21 +14,34 @@ internal class Day6Test {
 
     @Test
     fun countOrbits() {
-        val (graph, com) = day6.buildGraph(
+        val (_, com) = day6.buildGraph(
             listOf(
                 Pair("COM", "B"), Pair("B", "C"), Pair("C", "D"), Pair("D", "E"), Pair("E", "F"), Pair("B", "G"),
                 Pair("G", "H"), Pair("D", "I"), Pair("E", "J"), Pair("J", "K"), Pair("K", "L")
-            ))
+            )
+        )
         assertEquals(42, day6.countOrbits(com))
     }
 
     @Test
     fun minTransfers(){
-        val (graph, com) = day6.buildGraph(
+        val (graph, _) = day6.buildGraph(
             listOf(
-                Pair("COM", "B"), Pair("B", "C"), Pair("C", "D"), Pair("D", "E"), Pair("E", "F"), Pair("B", "G"),
-                Pair("G", "H"), Pair("D", "I"), Pair("E", "J"), Pair("J", "K"), Pair("K", "L"), Pair("K", "YOU"), Pair("I", "SAN")
-            ))
+                Pair("COM", "B"),
+                Pair("B", "C"),
+                Pair("C", "D"),
+                Pair("D", "E"),
+                Pair("E", "F"),
+                Pair("B", "G"),
+                Pair("G", "H"),
+                Pair("D", "I"),
+                Pair("E", "J"),
+                Pair("J", "K"),
+                Pair("K", "L"),
+                Pair("K", "YOU"),
+                Pair("I", "SAN")
+            )
+        )
         assertEquals(4, day6.minTransfers(graph.findNode("YOU")!!, graph.findNode("SAN")!!))
     }
 }
