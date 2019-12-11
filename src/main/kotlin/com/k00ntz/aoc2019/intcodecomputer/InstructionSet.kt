@@ -76,11 +76,11 @@ internal fun MutableList<Long>.parseInstruction(ip: Int): Instruction =
     }
 
 interface Input {
-    fun getInput(): Long
+    fun get(): Long
 }
 
 interface Output {
-    fun sendOutput(i: Long)
+    fun send(i: Long)
 }
 
 data class IOBuffer(
@@ -88,23 +88,23 @@ data class IOBuffer(
     val buffer: LinkedBlockingQueue<Long> = LinkedBlockingQueue(initialInput)
 ) : Input,
     Output {
-    override fun getInput(): Long =
+    override fun get(): Long =
         buffer.take()
 
 
-    override fun sendOutput(i: Long) {
+    override fun send(i: Long) {
         buffer.put(i)
     }
 }
 
 data class FixedOutput(val values: MutableList<Long> = mutableListOf()) : Output {
-    override fun sendOutput(i: Long) {
+    override fun send(i: Long) {
         values.add(i)
     }
 }
 
 data class FixedInput(val value: List<Long>, private var state: Int = 0) : Input {
-    override fun getInput(): Long {
+    override fun get(): Long {
         return value[state++]
     }
 }
@@ -284,7 +284,7 @@ internal class InputIns(out: Int, private val mode: Mode) : WriteInstruction(2, 
     ) {
         if (input == null) throw RuntimeException("Null input!")
         else {
-            memory[mode.getOutputLocation(out, relativeBaseBox)] = input.getInput()
+            memory[mode.getOutputLocation(out, relativeBaseBox)] = input.get()
         }
     }
 
@@ -303,7 +303,7 @@ internal class OutputIns(private val p1: Long, private val mode: Mode) :
         output: Output,
         relativeBaseBox: RelativeBase
     ): Int {
-        output.sendOutput(mode.getValue(memory, p1, relativeBaseBox))
+        output.send(mode.getValue(memory, p1, relativeBaseBox))
         return ip + instructionSize
     }
 

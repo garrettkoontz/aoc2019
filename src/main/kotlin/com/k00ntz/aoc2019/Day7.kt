@@ -32,7 +32,7 @@ class Day7 : Day {
             Thread(WiredIntCodeComputer(input, ios[it], ios[(it + 1) % ios.size]))
         }
         wiredComputers.map { it.start(); it }.forEach { it.join() }
-        return ios.first().getInput()
+        return ios.first().get()
     }
 
     val phases1 = (0L..4L).toList()

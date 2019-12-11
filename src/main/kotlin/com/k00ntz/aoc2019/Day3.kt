@@ -3,7 +3,9 @@ package com.k00ntz.aoc2019
 import com.k00ntz.aoc2019.utils.*
 
 enum class Direction(val xMove: Int, val yMove: Int) {
-    U(0, 1), D(0, -1), L(-1, 0), R(1, 0)
+    U(0, 1), R(1, 0), D(0, -1), L(-1, 0);
+
+    fun toPoint() = Point(this.xMove, this.yMove)
 }
 
 data class ManhattanDirection(val dir: Direction, val count: Int) {
