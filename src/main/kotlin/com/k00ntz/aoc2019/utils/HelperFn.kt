@@ -61,3 +61,12 @@ fun <A, B> Iterable<A>.pMapIndexed(f: suspend (Int, A) -> B): List<B> = runBlock
 fun <T, R> Array<out T>.pMapIndexed(f: (index: Int, T) -> R): List<R> = runBlocking {
     mapIndexed { index, i -> async { f(index, i) } }.map { it.await() }
 }
+
+fun gcd(number1: Long, number2: Long): Long {
+    return if (number2 == 0L) {
+        number1
+    } else gcd(number2, number1 % number2)
+}
+
+fun lcm(number1: Long, number2: Long): Long =
+    (number1 / gcd(number1, number2)) * number2
