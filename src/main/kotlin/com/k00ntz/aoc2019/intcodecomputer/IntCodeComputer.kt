@@ -9,6 +9,7 @@ class WiredIntCodeComputer(
     inputMemory: LongArray,
     val input: Input,
     val output: Output,
+    val setMemory: Map<Int, Long> = emptyMap(),
     exitCode: Long = -1,
     debug: Boolean = false
 ) :
@@ -16,6 +17,7 @@ class WiredIntCodeComputer(
 
     override fun run() {
         val memory: MutableList<Long> = inputMemory.toMutableList()
+        setMemory.forEach { (i, l) -> memory[i] = l }
         go(memory, input, output, RelativeBase())
     }
 }
@@ -43,6 +45,7 @@ open class IntCodeComputer(
     inputMemory: LongArray,
     val noun: Long? = null,
     val verb: Long? = null,
+    val output: FixedOutput = FixedOutput(),
     debug: Boolean = false,
     exitCode: Long = -1
 ) : AbstractIntCodeComputer(inputMemory, debug, exitCode) {
@@ -53,7 +56,7 @@ open class IntCodeComputer(
         memory[2] = verb ?: memory[2]
 
         val inp = FixedInput(input.toList())
-        val output = FixedOutput()
+
         go(memory, inp, output, RelativeBase())
         return Pair(memory.toLongArray(), output.values)
     }
