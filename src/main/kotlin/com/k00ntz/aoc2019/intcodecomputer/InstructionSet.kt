@@ -1,6 +1,7 @@
 package com.k00ntz.aoc2019.intcodecomputer
 
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.LinkedBlockingDeque
+import java.util.concurrent.atomic.AtomicInteger
 
 internal fun MutableList<Long>.executeInstruction(
     ins: Instruction,
@@ -85,14 +86,22 @@ interface Output {
 
 data class IOBuffer(
     val initialInput: List<Long> = emptyList(),
-    val buffer: LinkedBlockingQueue<Long> = LinkedBlockingQueue(initialInput)
+    val buffer: LinkedBlockingDeque<Long> = LinkedBlockingDeque(initialInput),
+    val awaiting: AtomicInteger = AtomicInteger(0)
 ) : Input,
     Output {
-    override fun get(): Long =
-        buffer.take()
-
+    override fun get(): Long {
+        return if (buffer.peek() == null)
+            awaiting.incrementAndGet()
+                .let { buffer.take() }
+                .also {
+                    awaiting.decrementAndGet()
+                } else buffer.take()
+    }
 
     override fun send(i: Long) {
+        if (buffer.peekLast() == 22L && i == 3L)
+            println("putting 3")
         buffer.put(i)
     }
 }

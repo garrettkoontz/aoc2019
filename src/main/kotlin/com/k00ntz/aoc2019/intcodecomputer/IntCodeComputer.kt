@@ -61,6 +61,12 @@ open class IntCodeComputer(
         return Pair(memory.toLongArray(), output.values)
     }
 
+    fun executeProgram(inputObj: Input): Pair<LongArray, List<Long>> {
+        val memory: MutableList<Long> = inputMemory.toMutableList()
+        go(memory, inputObj, output, RelativeBase())
+        return Pair(memory.toLongArray(), output.values)
+    }
+
 }
 
 
