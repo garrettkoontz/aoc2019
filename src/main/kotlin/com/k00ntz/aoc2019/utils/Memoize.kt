@@ -1,4 +1,4 @@
-package com.k00ntz.aoc.utils
+package com.k00ntz.aoc2019.utils
 
 class Memoize<I, O>(val func: (I) -> O): (I) -> O{
     private val cache = hashMapOf<I, O>()
