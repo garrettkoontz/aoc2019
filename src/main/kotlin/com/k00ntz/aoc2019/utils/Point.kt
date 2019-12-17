@@ -80,3 +80,27 @@ fun convexHull(pts: List<Point>): List<Point> {
     }
     return stack.toList()
 }
+
+interface PointDrawable {
+    val default: String
+    fun draw(): String
+}
+
+fun Map<Point, PointDrawable>.toLists(): List<MutableList<String>> {
+    val maxWidth = this.keys.maxBy { it.first }!!.first
+    val minWidth = this.keys.minBy { it.first }!!.first
+    val maxHeight = this.keys.maxBy { it.second }!!.second
+    val minHeight = this.keys.minBy { it.second }!!.second
+    val default = this.values.first().default
+    val wideArray = (minWidth..maxWidth).map { default }.toList()
+    val printGrid = (minHeight..maxHeight).map { wideArray.toMutableList() }
+    this.entries.filter { it.key != Point(-1, 0) }.forEach { (pt, t) ->
+        printGrid[pt.y() - minHeight][pt.x() - minWidth] = t.draw()
+    }
+    return printGrid
+}
+
+fun Map<Point, PointDrawable>.draw(): String {
+    return this.toLists()
+        .joinToString(separator = "\n") { l -> l.joinToString(separator = "") { it } }
+}

@@ -50,7 +50,9 @@ class Day13 : Day {
             override fun toString(): String {
                 return str
             }
+
         }
+
 
         data class Value(val tileType: TileType?, val score: Long?)
 
