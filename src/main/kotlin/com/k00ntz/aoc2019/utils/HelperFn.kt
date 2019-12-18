@@ -49,7 +49,7 @@ fun <A, B> Iterator<A>.pmap(f: suspend (A) -> B): List<B> {
     }.pmap(f)
 }
 
-private fun <T> Array<T>.pmap(f: suspend (T) -> Unit) = runBlocking {
+fun <T, R> Array<T>.pmap(f: suspend (T) -> R) = runBlocking {
     map { async { f(it) } }.map { it.await() }
 }
 
