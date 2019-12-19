@@ -30,7 +30,7 @@ class Day15 : Day {
         try {
             IntCodeComputer(input, output = ioOutput).executeProgram(ioInput)
         } catch (p: PoisonPill) {
-            println(p.map.draw())
+//            println(p.map.draw())
             m = p.map
             return tracePath(p.map)
         }

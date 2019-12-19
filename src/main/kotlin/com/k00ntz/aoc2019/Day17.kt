@@ -47,13 +47,12 @@ class Day17 : Day {
         val ioInput = FixedInput(emptyList())
         IntCodeComputer(input, output = ioOutput).executeProgram(ioInput)
         val mapString = String(ioOutput.values.map { it.toChar() }.toCharArray())
-        println(mapString)
+//        println(mapString)
         val map: List<CharArray> = mapString
             .split("\n").map { it.toCharArray() }
         val intersects = findIntersections(map)
         return intersects.map { it.first * it.second }.sum()
     }
-    // 20958 too high
 
     fun findIntersections(map: List<CharArray>): List<Point> =
         map.drop(1).dropLast(1).mapIndexed { rowIdx, ca ->
