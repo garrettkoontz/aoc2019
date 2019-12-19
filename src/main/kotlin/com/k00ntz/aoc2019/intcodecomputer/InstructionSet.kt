@@ -129,7 +129,7 @@ enum class Mode(private val code: Int) {
         when (this) {
             POSITION -> memory.getOrNull(i.toInt()) ?: 0
             IMMEDIATE -> i
-            RELATIVE -> memory[i.toInt() + relativeBaseBox.rb]
+            RELATIVE -> memory.getOrNull(i.toInt() + relativeBaseBox.rb) ?: 0
         }
 
     fun getOutputLocation(out: Int, relativeBaseBox: RelativeBase) =
