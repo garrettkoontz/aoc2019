@@ -57,9 +57,6 @@ class Day17 : Day {
     fun findIntersections(map: List<CharArray>): List<Point> =
         map.drop(1).dropLast(1).mapIndexed { rowIdx, ca ->
             ca.mapIndexed { colIdx, c ->
-                if (rowIdx == 31)
-                    0
-                else 1
                 if (colIdx > 0 && colIdx < ca.size - 1 &&
                     c == '#' && ca[colIdx - 1] == '#' && ca[colIdx + 1] == '#'
                     && map[rowIdx][colIdx] == '#' && map[rowIdx + 2][colIdx] == '#'
@@ -119,9 +116,6 @@ class Day17 : Day {
             'X' -> Direction.GONE
             else -> throw RuntimeException("not a direction: $c")
         }
-
-    fun List<CharArray>.getPoint(pt: Point): Char =
-        this[pt.y()][pt.x()]
 
 
     private fun tracePath(map: List<CharArray>): String {

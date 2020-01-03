@@ -11,6 +11,15 @@ fun measureAndPrintTime(block: () -> Unit) {
     println(" took $time ms")
 }
 
+fun List<CharArray>.getPoint(pt: Point): Char =
+    this[pt.y()][pt.x()]
+
+fun List<CharArray>.getPointOrNull(pt: Point): Char? {
+    if (pt.y() < 0 || pt.y() >= this.size) return null
+    if (pt.x() < 0 || pt.x() >= this[pt.y()].size) return null
+    return this[pt.y()][pt.x()]
+}
+
 inline fun <T : Any> parseFile(fileName: String, crossinline parsefn: (String) -> T): List<T> =
     ClassLoader.getSystemResourceAsStream(fileName).use { inputStream ->
         if (inputStream == null) throw RuntimeException("resource $fileName not found")
