@@ -57,8 +57,17 @@ internal class Day18Test {
             "#cB#Ab#\n" +
             "#######"
 
+    val input7String = "###############\n" +
+            "#d.ABC.#.....a#\n" +
+            "######...######\n" +
+            "######.@.######\n" +
+            "######...######\n" +
+            "#b.....#.....c#\n" +
+            "###############"
+
     @Test
     fun part2() {
+        assertEquals(24, day18.part2(input7String.split("\n").map { it.toCharArray() }))
         assertEquals(8, day18.part2(input6String.split("\n").map { it.toCharArray() }))
     }
 }

@@ -43,11 +43,63 @@ class Day18 : Day {
                 }
             }
         }
-        return dijkstra(conditionalKeys(newInput))
+        return dijkstra2(conditionalKeys(newInput))
     }
 
     fun part1(map: List<CharArray>): Int =
         dijkstra(conditionalKeys(map))
+
+    private fun dijkstra2(map: Map<Item, Map<Key, Pair<Int, Set<Char>>>>): Int {
+        val allKeys = map.keys.filterIsInstance<Key>()
+        val bots = map.keys.filter { it is Bot }
+        return bots.map dij@{
+            val reachableKeys = findReachableKeys(it as Bot, map)
+            doDijkstra(it, reachableKeys, map)
+        }.sum()
+    }
+
+    fun findReachableKeys(bot: Bot, map: Map<Item, Map<Key, Pair<Int, Set<Char>>>>): Set<Key> {
+        val keySet = mutableSetOf<Key>()
+        var queue = map.getValue(bot).keys
+        while (queue.isNotEmpty()) {
+            keySet.addAll(queue)
+            queue = queue.flatMap { map.getValue(it).keys }.toSet().minus(keySet)
+        }
+        return keySet
+    }
+
+    private fun doDijkstra(
+        item: Item,
+        validKeys: Set<Key>,
+        map: Map<Item, Map<Key, Pair<Int, Set<Char>>>>
+    ): Int {
+        val heap =
+            PriorityQueue<Triple<Int, Item, Set<Key>>>(kotlin.Comparator { o1, o2 -> o1.first.compareTo(o2.first) })
+        heap.offer(Triple(0, item, emptySet()))
+        val seen = mutableSetOf<Pair<Point, Set<Key>>>()
+
+        while (heap.isNotEmpty()) {
+            val (d, k, currentKeys) = heap.poll()
+            if (currentKeys.containsAll(validKeys)) {
+                return d
+            }
+            if (seen.contains(Pair(k.point, currentKeys))) continue
+            seen.add(Pair(k.point, currentKeys))
+            val nodes = map.getValue(k)
+            nodes.filter {
+                if (currentKeys.isEmpty())
+                    it.value.second.intersect(validKeys.map { it.c }).isEmpty()
+                else {
+                    val dropBadKeys = it.value.second.intersect(validKeys.map { it.c })
+                    currentKeys.map { k -> k.c.toUpperCase() }.containsAll(dropBadKeys)
+                }
+
+            }.forEach { (t, u) ->
+                heap.offer(Triple(d + u.first, t, currentKeys.plus(t)))
+            }
+        }
+        return -1
+    }
 
     private fun dijkstra(map: Map<Item, Map<Key, Pair<Int, Set<Char>>>>): Int {
         val allKeys = map.keys.filterIsInstance<Key>()

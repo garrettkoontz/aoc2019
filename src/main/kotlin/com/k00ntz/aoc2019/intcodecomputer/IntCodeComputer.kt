@@ -37,7 +37,7 @@ abstract class AbstractIntCodeComputer(
             ip = memory.executeInstruction(ins, ip, input, output, relativeBase)
             ins = memory.parseInstruction(ip)
         }
-        output.send(exitCode)
+//        output.send(exitCode)
     }
 }
 
@@ -65,6 +65,18 @@ open class IntCodeComputer(
         val memory: MutableList<Long> = inputMemory.toMutableList()
         go(memory, inputObj, output, RelativeBase())
         return Pair(memory.toLongArray(), output.values)
+    }
+
+    fun executeProgram(inputObj: Input, output: Output): Pair<LongArray, Output> {
+        val memory: MutableList<Long> = inputMemory.toMutableList()
+        go(memory, inputObj, output, RelativeBase())
+        return Pair(memory.toLongArray(), output)
+    }
+
+    fun executeProgram(inputObj: FixedInput, output: FixedOutput): Pair<LongArray, FixedOutput> {
+        val memory: MutableList<Long> = inputMemory.toMutableList()
+        go(memory, inputObj, output, RelativeBase())
+        return Pair(memory.toLongArray(), output)
     }
 
 }
