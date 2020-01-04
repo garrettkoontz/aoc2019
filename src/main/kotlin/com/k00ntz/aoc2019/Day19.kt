@@ -5,7 +5,6 @@ import com.k00ntz.aoc2019.intcodecomputer.FixedOutput
 import com.k00ntz.aoc2019.intcodecomputer.IntCodeComputer
 import com.k00ntz.aoc2019.intcodecomputer.parseIntComputerInput
 import com.k00ntz.aoc2019.utils.Day
-import com.k00ntz.aoc2019.utils.PointDrawable
 import com.k00ntz.aoc2019.utils.measureAndPrintTime
 
 fun main() {
@@ -27,7 +26,7 @@ class Day19 : Day {
         val icc = IntCodeComputer(input)
         var line = 4L
         var previousXStart = 0L
-        while (line < 100000) {
+        while (line < 1500) {
             (0..10).first {
                 previousXStart += 1
                 icc.executeProgram(FixedInput(listOf(previousXStart, line)), FixedOutput()).second.values.last() == 1L
@@ -37,13 +36,13 @@ class Day19 : Day {
                     FixedInput(listOf(previousXStart + internalPointer, line)),
                     FixedOutput()
                 ).second.values.last() == 1L
+                && icc.executeProgram(
+                    FixedInput(listOf(previousXStart + internalPointer + 99, line)),
+                    FixedOutput()
+                ).second.values.last() == 1L
             ) {
                 if (icc.executeProgram(
-                        FixedInput(listOf(previousXStart + internalPointer + 100, line)),
-                        FixedOutput()
-                    ).second.values.last() == 1L
-                    && icc.executeProgram(
-                        FixedInput(listOf(previousXStart + internalPointer, line + 100)),
+                        FixedInput(listOf(previousXStart + internalPointer, line + 99)),
                         FixedOutput()
                     ).second.values.last() == 1L
                 ) return 10000 * (previousXStart + internalPointer) + line
@@ -60,23 +59,5 @@ class Day19 : Day {
             icc.executeProgram(i % 50L, i / 50L)
         }
         return icc.output.values.sum()
-    }
-}
-
-fun Long.toDrawable(): PointDrawable {
-    return if (this == 1L) object : PointDrawable {
-        override val default: String
-            get() = "#"
-
-        override fun draw(): String {
-            return "#"
-        }
-    } else object : PointDrawable {
-        override val default: String
-            get() = "."
-
-        override fun draw(): String {
-            return "."
-        }
     }
 }
