@@ -25,6 +25,15 @@ fun Point.manhattanDistanceto(point: Point): Int {
     return abs(this.x() - point.x()) + abs(this.y() - point.y())
 }
 
+fun Point.validNeighbors(map: List<CharArray>, matcher: (Char) -> Boolean = { true }): Set<Point> =
+    setOf(this + Point(0, 1), this + Point(0, -1), this + Point(1, 0), this + Point(-1, 0))
+        .filter {
+            it.x() >= 0 && it.x() < map.first().size
+                    && it.y() >= 0 && it.y() < map.size
+                    && matcher(it)
+        }
+        .toSet()
+
 fun Point.distanceTo(point: Point): Double {
     val xDiff = (this.x() - point.x()).toDouble()
     val yDiff = (this.y() - point.y()).toDouble()
