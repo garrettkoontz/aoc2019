@@ -28,9 +28,9 @@ fun Point.manhattanDistanceto(point: Point): Int {
 fun Point.validNeighbors(map: List<CharArray>, matcher: (Char) -> Boolean = { true }): Set<Point> =
     setOf(this + Point(0, 1), this + Point(0, -1), this + Point(1, 0), this + Point(-1, 0))
         .filter {
-            it.x() >= 0 && it.x() < map.first().size
-                    && it.y() >= 0 && it.y() < map.size
-                    && matcher(it)
+            it.y() >= 0 && it.y() < map.size
+                    && it.x() >= 0 && it.x() < map[it.y()].size
+                    && matcher(map.getPoint(it))
         }
         .toSet()
 
