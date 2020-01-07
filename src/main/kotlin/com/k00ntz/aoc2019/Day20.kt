@@ -51,9 +51,10 @@ class Day20 : Day {
         while (heap.isNotEmpty()) {
             val (distance, depth, portal, path) = heap.poll()
             if (portal == end) {
-                if (depth == 0) return distance - 1
+                if (depth < 0) return distance - 1
                 else continue
             }
+            if (depth < 0) continue
             if (portal == start && depth != 0) continue
             if (seen.contains(Pair(portal, path))) continue
             seen.add(Pair(portal, path))
@@ -71,35 +72,37 @@ class Day20 : Day {
         fun swap() = if (this == IN) OUT else IN
     }
 
+    fun getInOut(p: Point, xSize: Int, ySize: Int): INOUT =
+        if (p.isOuterPoint(xSize, ySize)) INOUT.OUT else INOUT.IN
+
     private fun Point.isOuterPoint(xSize: Int, ySize: Int): Boolean =
         this.x() == 0 || this.x() == xSize - 1 || this.y() == 0 || this.y() == ySize - 1
 
     private fun parseRecursiveMaze(map: List<CharArray>): Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Int>> {
-        val portalMap = parseToMap(map)
+        val portalMap: Map<Point, Pair<INOUT, String>> = parseToMap(map)
         return portalMap.map { entry ->
             val pointMap = mutableMapOf<Pair<String, INOUT>, Int>()
-            val firstPoint = Pair(entry.key, 0)
-            val queue = ArrayDeque<Pair<Pair<Point, INOUT>, Int>>()
+            val firstPoint = Triple(entry.key, entry.value.first, 0)
+            val queue = ArrayDeque<Triple<Point, INOUT, Int>>()
             val seen = mutableSetOf<Pair<Point, INOUT>>()
             queue.add(firstPoint)
             while (queue.isNotEmpty()) {
                 val p = queue.pollFirst()
-                if (seen.contains(p.first)) continue
-                seen.add(p.first)
-                val neighbors = p.first.first.validNeighbors(map) { !(it == ' ' || it == '#') }
+                if (seen.contains(Pair(p.first, p.second))) continue
+                seen.add(Pair(p.first, p.second))
+                val neighbors = p.first.validNeighbors(map) { !(it == ' ' || it == '#') }
                 neighbors.forEach {
-                    val swapPair = Pair(it, p.first.second.swap())
-                    if (portalMap.keys.contains(swapPair))
-                        pointMap[Pair(portalMap.getValue(swapPair), swapPair.second)] = p.second + 1
-                    else if (!seen.contains(swapPair))
-                        queue.add(Pair(Pair(it, p.first.second), p.second + 1))
+                    if (portalMap.keys.contains(it))
+                        pointMap[portalMap.getValue(it).swap()] = p.third + 1
+                    else if (!seen.contains(Pair(it, p.second)))
+                        queue.add(Triple(it, p.second, p.third + 1))
                 }
             }
-            Pair(Pair(entry.value, entry.key.second), pointMap.toMap())
+            Pair(portalMap.getValue(entry.key).swap(), pointMap.toMap())
         }.toMap()
     }
 
-    private fun parseToMap(map: List<CharArray>): MutableMap<Pair<Point, INOUT>, String> {
+    private fun parseToMap(map: List<CharArray>): MutableMap<Point, Pair<INOUT, String>> {
         val portalMap = mutableMapOf<Point, Pair<INOUT, String>>()
         for (caIdx in map.indices) {
             for (cIdx in map[caIdx].indices) {
@@ -109,7 +112,7 @@ class Day20 : Day {
                     val point = others.firstOrNull { map.getPoint(it) == '.' } ?: continue
                     val otherPoint = others.first { map.getPoint(it).isLetter() }
                     val otherLabel = map.getPoint(otherPoint)
-                    val inOut = if (otherPoint.isOuterPoint(map[caIdx].size, map.size)) INOUT.OUT else INOUT.IN
+                    val inOut = getInOut(otherPoint, map[caIdx].size, map.size)
                     portalMap[point] = Pair(inOut, if (c > otherLabel) "$otherLabel$c" else "$c$otherLabel")
                 }
             }
@@ -179,3 +182,6 @@ class Day20 : Day {
     }
 
 }
+
+private fun <A, B> Pair<A, B>.swap(): Pair<B, A> =
+    Pair(this.second, this.first)

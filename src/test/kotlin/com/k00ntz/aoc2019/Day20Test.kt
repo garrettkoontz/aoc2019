@@ -111,7 +111,7 @@ internal class Day20Test {
 
     @Test
     fun part2() {
-        assertEquals(26, day20.part2(input1String.split("\n").map { it.toCharArray() }))
         assertEquals(396, day20.part2(input3String.split("\n").map { it.toCharArray() }))
+        assertEquals(26, day20.part2(input1String.split("\n").map { it.toCharArray() }))
     }
 }
