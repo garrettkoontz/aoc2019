@@ -34,6 +34,9 @@ fun Point.validNeighbors(map: List<CharArray>, matcher: (Char) -> Boolean = { tr
         }
         .toSet()
 
+operator fun Point.compareTo(other: Point): Int =
+    this.distanceTo(Point(0, 0)).compareTo(other.distanceTo(Point(0, 0)))
+
 fun Point.distanceTo(point: Point): Double {
     val xDiff = (this.x() - point.x()).toDouble()
     val yDiff = (this.y() - point.y()).toDouble()

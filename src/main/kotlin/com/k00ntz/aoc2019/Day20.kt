@@ -41,25 +41,37 @@ class Day20 : Day {
     }
 
     private fun recursiveDijkstra(
-        maze: Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Int>>,
-        start: Pair<String, INOUT> = Pair("AA", INOUT.OUT),
-        end: Pair<String, INOUT> = Pair("ZZ", INOUT.OUT)
+        maze: Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Pair<Int, Int>>>,
+        start: String = "AA",
+        end: String = "ZZ"
+//        , maxDepth: Int = 100000
     ): Int {
         val heap = PriorityQueue<HeapObj>()
-        heap.offer(HeapObj(0, 0, start, setOf(start)))
-        val seen = mutableSetOf<Pair<Pair<String, INOUT>, Set<Pair<String, INOUT>>>>()
+        heap.offer(HeapObj(0, 0, Pair(start, INOUT.OUT), setOf(Pair(start, INOUT.OUT))))
+        val seen = mutableSetOf<Triple<String, INOUT, Int>>()
         while (heap.isNotEmpty()) {
             val (distance, depth, portal, path) = heap.poll()
-            if (portal == end) {
-                if (depth < 0) return distance - 1
+            if (portal.first == end) {
+                if (depth < 0)
+                    return distance - 1
                 else continue
             }
             if (depth < 0) continue
-            if (portal == start && depth != 0) continue
-            if (seen.contains(Pair(portal, path))) continue
-            seen.add(Pair(portal, path))
+            if (portal.first == start && distance != 0) continue
+            val seenTriple = Triple(portal.first, portal.second, depth)
+            val preventSamePathTrace = Triple(portal.first, portal.second, depth - 1)
+            if (seen.contains(seenTriple) || seen.contains(preventSamePathTrace)) continue
+            seen.add(seenTriple)
             maze.getValue(portal).forEach {
-                heap.offer(HeapObj(distance + it.value + 1, depth + it.key.second.value, it.key, path.plus(it.key)))
+                //                if(depth + it.key.second.value <= maxDepth)
+                heap.offer(
+                    HeapObj(
+                        distance + it.value.first + 1,
+                        depth + it.value.second,
+                        Pair(it.key.first, it.key.second),
+                        path.plus(it.key)
+                    )
+                )
             }
         }
         return -1
@@ -78,10 +90,10 @@ class Day20 : Day {
     private fun Point.isOuterPoint(xSize: Int, ySize: Int): Boolean =
         this.x() == 0 || this.x() == xSize - 1 || this.y() == 0 || this.y() == ySize - 1
 
-    private fun parseRecursiveMaze(map: List<CharArray>): Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Int>> {
+    private fun parseRecursiveMaze(map: List<CharArray>): Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Pair<Int, Int>>> {
         val portalMap: Map<Point, Pair<INOUT, String>> = parseToMap(map)
-        return portalMap.map { entry ->
-            val pointMap = mutableMapOf<Pair<String, INOUT>, Int>()
+        val returnMap = portalMap.map { entry ->
+            val pointMap = mutableMapOf<Pair<String, INOUT>, Pair<Int, Int>>()
             val firstPoint = Triple(entry.key, entry.value.first, 0)
             val queue = ArrayDeque<Triple<Point, INOUT, Int>>()
             val seen = mutableSetOf<Pair<Point, INOUT>>()
@@ -93,13 +105,45 @@ class Day20 : Day {
                 val neighbors = p.first.validNeighbors(map) { !(it == ' ' || it == '#') }
                 neighbors.forEach {
                     if (portalMap.keys.contains(it))
-                        pointMap[portalMap.getValue(it).swap()] = p.third + 1
+                        pointMap[portalMap.getValue(it).swap()] =
+                            Pair(p.third + 1, portalMap.getValue(it).swap().second.value)
                     else if (!seen.contains(Pair(it, p.second)))
                         queue.add(Triple(it, p.second, p.third + 1))
                 }
             }
-            Pair(portalMap.getValue(entry.key).swap(), pointMap.toMap())
-        }.toMap()
+            Pair(portalMap.getValue(entry.key).swap(), pointMap)
+        }.toMap().toMutableMap()
+        return consolidate(returnMap)
+    }
+
+    private fun consolidate(
+        map: MutableMap<Pair<String, INOUT>, MutableMap<Pair<String, INOUT>, Pair<Int, Int>>>
+    )
+            : Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Pair<Int, Int>>> {
+        map.forEach { entry ->
+            entry.value.remove(entry.key)
+        }
+        val specialstrings = setOf("AA", "ZZ")
+        val multilinks = map.filter { it.value.size > 1 }
+            .map { (key, mapValue) ->
+                Pair(key, mapValue.map {
+                    var distance = it.value.first
+                    var depth = it.value.second
+                    var node = Pair(it.key.first, it.key.second.swap())
+                    while (map.containsKey(node) && map[node]!!.size == 1) {
+                        val nextNode = map[node]!!.entries.first()
+                        val n = nextNode.value
+                        distance += n.first
+                        depth += n.second
+                        node = Pair(nextNode.key.first, nextNode.key.second.swap())
+                        if (specialstrings.contains(nextNode.key.first))
+                            break
+                    }
+                    Pair(node, Pair(distance, depth))
+                }.toMap())
+            }.toMap()
+
+        return multilinks
     }
 
     private fun parseToMap(map: List<CharArray>): MutableMap<Point, Pair<INOUT, String>> {
@@ -113,7 +157,7 @@ class Day20 : Day {
                     val otherPoint = others.first { map.getPoint(it).isLetter() }
                     val otherLabel = map.getPoint(otherPoint)
                     val inOut = getInOut(otherPoint, map[caIdx].size, map.size)
-                    portalMap[point] = Pair(inOut, if (c > otherLabel) "$otherLabel$c" else "$c$otherLabel")
+                    portalMap[point] = Pair(inOut, if (point > otherPoint) "$otherLabel$c" else "$c$otherLabel")
                 }
             }
         }
