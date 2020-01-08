@@ -57,22 +57,29 @@ class Day20 : Day {
         val endNode = maze.keys.first { it.first == end }
         val queue = ArrayDeque<Triple<Portal, Int, Int>>()
         queue.add(Triple(startNode, 0, 0))
+        val seen = mutableSetOf<Pair<Portal, Int>>()
         while (queue.isNotEmpty()) {
-            val p: Triple<Portal, Int, Int> = queue.pollFirst()
-            if (p.first.first == endNode.first)
-                if (p.second < 0)
-                    return p.third
+            val (p, dpth, dist) = queue.pollFirst()
+            if (dist == 397)
+                println("testing this")
+            if (p.first == endNode.first)
+                if (dpth < 0)
+                    return dist - 1
                 else continue
-            if (p.second < 0 || p.second > maxDepth)
+            if ((p.first == startNode.first && dist != 0) || dpth < 0 || dpth > maxDepth)
                 continue
-            maze.getValue(p.first).forEach { (portal, distanceDepthPair) ->
-                queue.add(
-                    Triple(
-                        portal,
-                        distanceDepthPair.second + p.second,
-                        distanceDepthPair.first + 1 + p.third
+            if (seen.contains(Pair(p, dpth)))
+                continue
+            seen.add(Pair(p, dpth))
+            maze.getValue(p).forEach { (portal, distanceDepthPair) ->
+                if (p != portal)
+                    queue.add(
+                        Triple(
+                            portal.swapInOut(),
+                            distanceDepthPair.second + dpth,
+                            distanceDepthPair.first + 1 + dist
+                        )
                     )
-                )
             }
         }
         return -1
