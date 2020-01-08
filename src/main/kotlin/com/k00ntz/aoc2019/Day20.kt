@@ -7,6 +7,11 @@ fun main() {
     Day20().run()
 }
 
+typealias Portal = Pair<String, Day20.INOUT>
+
+fun Portal.swapInOut() =
+    Pair(this.first, this.second.swap())
+
 class Day20 : Day {
     override fun run() {
         val input = parseFile(("${this::class.simpleName!!.toLowerCase()}.txt")) { it.toCharArray() }
@@ -20,7 +25,7 @@ class Day20 : Day {
 
     fun part2(input: List<CharArray>): Int {
         val recursiveMaze = parseRecursiveMaze(input)
-        return recursiveDijkstra(recursiveMaze)
+        return bfs(recursiveMaze)
     }
 
     fun part1(input: List<CharArray>): Int {
@@ -32,12 +37,45 @@ class Day20 : Day {
         val distance: Int,
         val depth: Int,
         val portal: Pair<String, INOUT>,
-        val path: Set<Pair<String, INOUT>>
+        val path: Set<Triple<String, INOUT, Int>>
     ) : Comparable<HeapObj> {
 
         override fun compareTo(other: HeapObj): Int =
-            this.distance.compareTo(other.distance)
+            this.distance.compareTo(other.distance).let {
+                if (it == 0) this.depth.compareTo(other.depth) else it
+            }
 
+    }
+
+    private fun bfs(
+        maze: Map<Portal, Map<Portal, Pair<Int, Int>>>,
+        start: String = "AA",
+        end: String = "ZZ"
+    ): Int {
+        val maxDepth = maze.size
+        val startNode = maze.keys.first { it.first == start }
+        val endNode = maze.keys.first { it.first == end }
+        val queue = ArrayDeque<Triple<Portal, Int, Int>>()
+        queue.add(Triple(startNode, 0, 0))
+        while (queue.isNotEmpty()) {
+            val p: Triple<Portal, Int, Int> = queue.pollFirst()
+            if (p.first.first == endNode.first)
+                if (p.second < 0)
+                    return p.third
+                else continue
+            if (p.second < 0 || p.second > maxDepth)
+                continue
+            maze.getValue(p.first).forEach { (portal, distanceDepthPair) ->
+                queue.add(
+                    Triple(
+                        portal,
+                        distanceDepthPair.second + p.second,
+                        distanceDepthPair.first + 1 + p.third
+                    )
+                )
+            }
+        }
+        return -1
     }
 
     private fun recursiveDijkstra(
@@ -47,7 +85,7 @@ class Day20 : Day {
 //        , maxDepth: Int = 100000
     ): Int {
         val heap = PriorityQueue<HeapObj>()
-        heap.offer(HeapObj(0, 0, Pair(start, INOUT.OUT), setOf(Pair(start, INOUT.OUT))))
+        heap.offer(HeapObj(0, 0, Pair(start, INOUT.OUT), setOf(Triple(start, INOUT.OUT, 0))))
         val seen = mutableSetOf<Triple<String, INOUT, Int>>()
         while (heap.isNotEmpty()) {
             val (distance, depth, portal, path) = heap.poll()
@@ -59,8 +97,7 @@ class Day20 : Day {
             if (depth < 0) continue
             if (portal.first == start && distance != 0) continue
             val seenTriple = Triple(portal.first, portal.second, depth)
-            val preventSamePathTrace = Triple(portal.first, portal.second, depth - 1)
-            if (seen.contains(seenTriple) || seen.contains(preventSamePathTrace)) continue
+            if (seen.contains(seenTriple)) continue
             seen.add(seenTriple)
             maze.getValue(portal).forEach {
                 //                if(depth + it.key.second.value <= maxDepth)
@@ -69,7 +106,7 @@ class Day20 : Day {
                         distance + it.value.first + 1,
                         depth + it.value.second,
                         Pair(it.key.first, it.key.second),
-                        path.plus(it.key)
+                        path.plus(Triple(it.key.first, it.key.second, depth + it.value.second))
                     )
                 )
             }
@@ -92,7 +129,8 @@ class Day20 : Day {
 
     private fun parseRecursiveMaze(map: List<CharArray>): Map<Pair<String, INOUT>, Map<Pair<String, INOUT>, Pair<Int, Int>>> {
         val portalMap: Map<Point, Pair<INOUT, String>> = parseToMap(map)
-        val returnMap = portalMap.map { entry ->
+//        val returnMap =
+        return portalMap.map { entry ->
             val pointMap = mutableMapOf<Pair<String, INOUT>, Pair<Int, Int>>()
             val firstPoint = Triple(entry.key, entry.value.first, 0)
             val queue = ArrayDeque<Triple<Point, INOUT, Int>>()
@@ -113,7 +151,7 @@ class Day20 : Day {
             }
             Pair(portalMap.getValue(entry.key).swap(), pointMap)
         }.toMap().toMutableMap()
-        return consolidate(returnMap)
+//        return consolidate(returnMap)
     }
 
     private fun consolidate(
@@ -133,7 +171,7 @@ class Day20 : Day {
                     while (map.containsKey(node) && map[node]!!.size == 1) {
                         val nextNode = map[node]!!.entries.first()
                         val n = nextNode.value
-                        distance += n.first
+                        distance += n.first + 1
                         depth += n.second
                         node = Pair(nextNode.key.first, nextNode.key.second.swap())
                         if (specialstrings.contains(nextNode.key.first))
