@@ -70,7 +70,7 @@ class Day22 : Day {
         return when {
             newStackRegex.matches(it) -> NewStack
             cutRegex.matches(it) -> cutRegex.matchEntire(it)!!.destructured.let { (n) -> Cut(n.toInt()) }
-            dealIncrementRegex.matches(it) -> dealIncrementRegex.matchEntire(it)!!.destructured.let { (n) -> Deal(n.toInt()) }
+            dealIncrementRegex.matches(it) -> dealIncrementRegex.matchEntire(it)!!.destructured.let { (n) -> Deal(n.toLong()) }
             else -> throw RuntimeException("can't parse '$it'")
         }
 

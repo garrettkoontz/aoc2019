@@ -100,8 +100,6 @@ data class IOBuffer(
     }
 
     override fun send(i: Long) {
-        if (buffer.peekLast() == 22L && i == 3L)
-            println("putting 3")
         buffer.put(i)
     }
 }

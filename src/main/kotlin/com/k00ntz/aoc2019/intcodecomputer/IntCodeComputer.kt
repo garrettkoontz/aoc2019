@@ -22,6 +22,25 @@ class WiredIntCodeComputer(
     }
 }
 
+class YieldingIntCodeComputer(
+    internal val inputMemory: LongArray,
+    val input: Input,
+    val output: Output,
+    private var ip: Int = 0,
+    private val memory: MutableList<Long> = inputMemory.toMutableList(),
+    private val relativeBase: RelativeBase = RelativeBase()
+) {
+    fun step() {
+        if (memory.parseInstruction(ip) is InputIns || memory.parseInstruction(ip) is OutputIns) {
+            while (memory.parseInstruction(ip) is InputIns || memory.parseInstruction(ip) is OutputIns) {
+                ip = memory.executeInstruction(memory.parseInstruction(ip), ip, input, output, relativeBase)
+            }
+        } else {
+            ip = memory.executeInstruction(memory.parseInstruction(ip), ip, input, output, relativeBase)
+        }
+    }
+}
+
 abstract class AbstractIntCodeComputer(
     internal val inputMemory: LongArray,
     val debug: Boolean = false,
